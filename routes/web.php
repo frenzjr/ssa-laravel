@@ -13,10 +13,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [
+    'uses' => 'UsersController@index'
+]);
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::prefix('/users')->group(function () {
+    Route::get('index', [
+        'uses' => 'UsersController@index'
+    ]);
+    Route::any('create', [
+        'uses' => 'UsersController@create'
+    ]);
+    Route::any('edit/{id}', [
+        'uses' => 'UsersController@edit'
+    ]);
+});
