@@ -8,7 +8,7 @@
                 <div class="card-header">{{ __('List of All Users') }}</div>
 
                 <div class="card-body">
-                    <a href="/users/trashed">Show Soft Deleted Users</a>
+                    <a href="/users/index">Show All Users</a>
                     <table class="table">
                         <thead class="thead-dark">
                             <th>id</th>
@@ -21,7 +21,7 @@
                         </thead>
                         <tbody>
                             @foreach ($users as $user)
-                                <tr style="{{!is_null($user->deleted_at) ? 'background-color:red' : ''}}">
+                                <tr>
                                     <th>{{$user['id']}}</th>
                                     <th>{{$user['username']}}</th>
                                     <th>

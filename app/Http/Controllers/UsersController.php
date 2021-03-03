@@ -19,7 +19,30 @@ class UsersController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->User = new User();
+        $this->User = DB::table('users');
+    }
+
+    /**
+     * for getting user
+     * @param Request $request
+     *
+     * @return User
+     */
+    private function getSingleUser(Request $request) {
+        return $this->User->select(
+            'id',
+            'prefixname',
+            'firstname',
+            'middlename',
+            'lastname',
+            'suffixname',
+            'username',
+            'email',
+            'photo',
+            'type',
+            'deleted_at'
+        )->where('id', $request->route('id'))
+        ->first();
     }
 
     /**
@@ -36,14 +59,19 @@ class UsersController extends Controller
             'username',
             'email',
             'photo',
-            'type'
-        )->get();
+            'type',
+            'deleted_at'
+        )->withTrashed()
+        ->get();
 
         return view('users.index', ['users' => $users]);
     }
 
     /**
      * for adding new user
+     * @param Request $request HTTP request
+     *
+     * @return view
      */
     public function create(Request $request)
     {
@@ -63,11 +91,146 @@ class UsersController extends Controller
                 ]);
             }
         }
+
         return view('users.create');
     }
 
-    public function edit()
+    /**
+     * for editing user
+     * @param Request $request HTTP request
+     *
+     * @return view
+     */
+    public function edit(Request $request)
     {
-        return view('users.edit');
+        $user = $this->getSingleUser($request);
+        $userId = $user->id;
+
+        if (is_null($user)) {
+            return redirect('/users/index');
+        }
+
+        if ($request->isMethod('post')) {
+            $filename = null;
+            $updateUser = [
+                'prefixname' => $request['prefixname'],
+                'firstname' => $request['firstname'],
+                'middlename' => $request['middlename'],
+                'lastname' => $request['lastname'],
+                'suffixname' => $request['suffixname'],
+                'email' => $request['email'],
+                'username' => $request['username']
+            ];
+            if (!is_null($request->file('photo'))) {
+                $filename = Storage::disk('public')->put('users', $request->file('photo'));
+                $updateUser['photo'] = $filename;
+            }
+
+            $this->User->where('id', $userId)
+                ->update($updateUser);
+
+            $user->prefixname = $request['prefixname'];
+            $user->firstname = $request['firstname'];
+            $user->middlename = $request['middlename'];
+            $user->lastname = $request['lastname'];
+            $user->suffixname = $request['suffixname'];
+            $user->email = $request['email'];
+            $user->photo = $filename ?? $user->photo;
+        }
+
+        return view('users.edit', ['user' => $user]);
+    }
+
+    /**
+     * for soft delete of user
+     * @param Request $request
+     *
+     * @return view
+     */
+    public function destroy(Request $request) {
+        $user = $this->getSingleUser($request);
+        $userId = $user->id;
+
+        if (is_null($user)) {
+            return redirect('/users/index');
+        }
+        $this->User->where('id', $userId)
+            ->update(['deleted_at' => date('Y-m-d H:i:s')]);
+
+        return redirect('/users/show/' . $user->id);
+    }
+
+    /**
+    * for showing single user
+    * @param Request $request
+    *
+    * @return view
+    */
+    public function show(Request $request) {
+        $user = $this->getSingleUser($request);
+
+        if (is_null($user)) {
+            return redirect('/users/index');
+        }
+
+        return view('users.show', ['user' => $user]);
+    }
+
+    /**
+    * for showing trashed users
+    *
+    * @return view
+    */
+    public function trashed() {
+        $users = User::select(
+            'id',
+            'prefixname',
+            'firstname',
+            'middlename',
+            'lastname',
+            'suffixname',
+            'username',
+            'email',
+            'photo',
+            'type',
+            'deleted_at'
+        )->onlyTrashed()
+        ->get();
+
+        return view('users.trashed', ['users' => $users]);
+    }
+
+    
+    /**
+     * for restoring soft deleted of user
+     * @param Request $request
+     *
+     * @return redirect
+     */
+    public function restore(Request $request) {
+        $user = $this->getSingleUser($request);
+        $userId = $user->id;
+
+        if (is_null($user)) {
+            return redirect('/users/index');
+        }
+
+        $this->User->where('id', $userId)
+            ->update(['deleted_at' => null]);
+
+        return redirect('/users/index');
+    }
+
+    /**
+     * for hard delete
+     *
+     * @return redirect
+     */
+    public function delete(Request $request) {
+        User::withTrashed()
+            ->where('id', $request->route('id'))
+            ->forceDelete();
+
+        return redirect('/users/index');
     }
 }
