@@ -218,25 +218,29 @@ class UserService implements UserServiceInterface
                 new Detail([
                     'key' => 'Full name',
                     'value' => $fullname,
-                    'user_id' => $attribute->id
+                    'user_id' => $attribute->id,
+                    'type' => 'bio'
                 ])
             ], [
                 new Detail([
                     'key' => 'Middle Initial',
                     'value' => $middleName,
-                    'user_id' => $attribute->id
+                    'user_id' => $attribute->id,
+                    'type' => 'bio'
                 ])
             ], [
                 new Detail([
                     'key' => 'Avatar',
                     'value' => $avatar,
-                    'user_id' => $attribute->id
+                    'user_id' => $attribute->id,
+                    'type' => 'bio'
                 ])
             ], [
                 new Detail([
                     'key' => 'Gender',
                     'value' => $gender,
-                    'user_id' => $attribute->id
+                    'user_id' => $attribute->id,
+                    'type' => 'bio'
                 ])
             ]
         ];
