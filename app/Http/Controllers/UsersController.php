@@ -228,7 +228,7 @@ class UsersController extends Controller
      *
      * @return redirect
      */
-    public function restore(UserRequest $request) {
+    public function restore(Request $request) {
         $user = $this->getSingleUser($request);
         $userId = $user->id;
 

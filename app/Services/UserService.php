@@ -199,12 +199,18 @@ class UserService implements UserServiceInterface
         return Storage::disk('public')->put('users', $request->file('photo'));
     }
 
+    /**
+     * saveUserDetail saving of user detail
+     * @param oject $attribute
+     *
+     * @return null
+     */
     public function saveUserDetail($attribute) {
-        $middleName = substr($attribute['middlename'], 0, 1);
+        $middleName = substr($attribute->middlename, 0, 1);
         $middleName = strlen($middleName) == 1 ? $middleName . '.' : '';
-        $fullname = implode(' ', [$attribute['firstname'], $middleName, $attribute['lastname'], $attribute['suffixname']]);
-        $avatar = $attribute['photo'];
-        $gender = $attribute === 'Mr' ? 'Male' : 'Female';
+        $fullname = implode(' ', [$attribute->firstname, $middleName, $attribute->lastname, $attribute->suffixname]);
+        $avatar = $attribute->photo;
+        $gender = $attribute->prefixname ==='Mr' ? 'Male' : 'Female';
         
         
         $toSave = [
@@ -212,25 +218,25 @@ class UserService implements UserServiceInterface
                 new Detail([
                     'key' => 'Full name',
                     'value' => $fullname,
-                    'user_id' => $attribute['id']
+                    'user_id' => $attribute->id
                 ])
             ], [
                 new Detail([
                     'key' => 'Middle Initial',
                     'value' => $middleName,
-                    'user_id' => $attribute['id']
+                    'user_id' => $attribute->id
                 ])
             ], [
                 new Detail([
                     'key' => 'Avatar',
                     'value' => $avatar,
-                    'user_id' => $attribute['id']
+                    'user_id' => $attribute->id
                 ])
             ], [
                 new Detail([
                     'key' => 'Gender',
                     'value' => $gender,
-                    'user_id' => $attribute['id']
+                    'user_id' => $attribute->id
                 ])
             ]
         ];

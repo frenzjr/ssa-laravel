@@ -123,7 +123,7 @@ class User extends Authenticatable
      *
      * @return User::class
      */
-    public function save(array $options = []) {
-        new UserSaved(User);
-    }
+    // public function save(array $options = []) {
+
+    // }
 }
