@@ -43,8 +43,8 @@
                                             <a href="/users/destroy/{{$user->id}}" class="btn btn-danger">Delete</a>
                                         @else
                                             <a href="/users/restore/{{$user->id}}" class="btn btn-warning">Restore</a>
-                                            <a href="/users/delete/{{$user->id}}" class="btn btn-danger">Hard Delete</a>
                                         @endif
+                                        <a href="/users/delete/{{$user->id}}" class="btn btn-danger">Hard Delete</a>
                                     </th>
                                 </tr>
                             @endforeach

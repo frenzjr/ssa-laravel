@@ -75,7 +75,7 @@
                             <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Suffix Name') }}</label>
 
                             <div class="col-md-6">
-                                <input id="suffixname" type="text" class="form-control @error('suffixname') is-invalid @enderror" name="suffixname" value="{{ old('suffixname') }}" required autocomplete="suffixname">
+                                <input id="suffixname" type="text" class="form-control @error('suffixname') is-invalid @enderror" name="suffixname" value="{{ old('suffixname') }}" autocomplete="suffixname">
 
                                 @error('suffixname')
                                     <span class="invalid-feedback" role="alert">

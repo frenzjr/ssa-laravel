@@ -20,34 +20,40 @@
                             <th>Action</th>
                         </thead>
                         <tbody>
-                            @foreach ($users as $user)
+                            @if (count($users) == 0)
                                 <tr>
-                                    <th>{{$user['id']}}</th>
-                                    <th>{{$user['username']}}</th>
-                                    <th>
-                                        @php
-                                            {{ echo implode(' ', [$user['prefixname'], $user['firstname'], $user['middlename'], $user['lastname'], $user['suffixname']]); }}
-                                        @endphp
-                                    </th>
-                                    <th>{{$user['email']}}</th>
-                                    <th>
-                                        @if (!is_null($user['photo']))
-                                            <img src="/storage/{{ $user['photo']}}" alt="" class="img-thumbnail">
-                                        @endif
-                                    </th>
-                                    <th>{{$user['type']}}</th>
-                                    <th>
-                                        <a href="/users/show/{{$user->id}}" class="btn btn-info">View</a>
-                                        <a href="/users/edit/{{$user->id}}" class="btn btn-success">Edit</a>
-                                        @if (is_null($user->deleted_at))
-                                            <a href="/users/destroy/{{$user->id}}" class="btn btn-danger">Delete</a>
-                                        @else
-                                            <a href="/users/restore/{{$user->id}}" class="btn btn-warning">Restore</a>
-                                            <a href="/users/delete/{{$user->id}}" class="btn btn-danger">Hard Delete</a>
-                                        @endif
-                                    </th>
+                                    <td colspan="7" style="text-align:center">No users are soft deleted</td>
                                 </tr>
-                            @endforeach
+                            @else
+                                @foreach ($users as $user)
+                                    <tr>
+                                        <th>{{$user['id']}}</th>
+                                        <th>{{$user['username']}}</th>
+                                        <th>
+                                            @php
+                                                {{ echo implode(' ', [$user['prefixname'], $user['firstname'], $user['middlename'], $user['lastname'], $user['suffixname']]); }}
+                                            @endphp
+                                        </th>
+                                        <th>{{$user['email']}}</th>
+                                        <th>
+                                            @if (!is_null($user['photo']))
+                                                <img src="/storage/{{ $user['photo']}}" alt="" class="img-thumbnail">
+                                            @endif
+                                        </th>
+                                        <th>{{$user['type']}}</th>
+                                        <th>
+                                            <a href="/users/show/{{$user->id}}" class="btn btn-info">View</a>
+                                            <a href="/users/edit/{{$user->id}}" class="btn btn-success">Edit</a>
+                                            @if (is_null($user->deleted_at))
+                                                <a href="/users/destroy/{{$user->id}}" class="btn btn-danger">Delete</a>
+                                            @else
+                                                <a href="/users/restore/{{$user->id}}" class="btn btn-warning">Restore</a>
+                                                <a href="/users/delete/{{$user->id}}" class="btn btn-danger">Hard Delete</a>
+                                            @endif
+                                        </th>
+                                    </tr>
+                                @endforeach
+                            @endif
                         </tbody>
                     </table>
                 </div>

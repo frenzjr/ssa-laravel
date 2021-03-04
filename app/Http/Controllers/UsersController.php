@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserRequest;
+use App\Services\UserService;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -11,15 +13,18 @@ use Symfony\Component\Console\Input\Input;
 
 class UsersController extends Controller
 {
+    private $userService;
+
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(UserService $userService)
     {
         $this->middleware('auth');
         $this->User = DB::table('users');
+        $this->userService = $userService;
     }
 
     /**
@@ -76,20 +81,36 @@ class UsersController extends Controller
     public function create(Request $request)
     {
         if ($request->isMethod('post')) {
-            if ($filename = Storage::disk('public')->put('users', $request->file('photo'))) {
-                User::create([
-                    'prefixname' => $request['prefixname'],
-                    'firstname' => $request['firstname'],
-                    'middlename' => $request['middlename'],
-                    'lastname' => $request['lastname'],
-                    'suffixname' => $request['suffixname'],
-                    'email' => $request['email'],
-                    'photo' => $filename,
-                    'username' => $request['username'],
-                    'password' => Hash::make($request['password']),
-                    'email_verified_at' => date('Y-m-d H:i:s'),
-                ]);
+            $filename = null;
+            $addUser = [
+                'prefixname' => $request['prefixname'],
+                'firstname' => $request['firstname'],
+                'middlename' => $request['middlename'],
+                'lastname' => $request['lastname'],
+                'suffixname' => $request['suffixname'],
+                'email' => $request['email'],
+                'username' => $request['username'],
+                'password' => Hash::make($request['password']),
+                'email_verified_at' => date('Y-m-d H:i:s'),
+            ];
+            if (!is_null($request->file('photo'))) {
+                $filename = Storage::disk('public')->put('users', $request->file('photo'));
+                $addUser['photo'] = $filename;
             }
+
+            // create user
+            User::create([
+                'prefixname' => $request['prefixname'],
+                'firstname' => $request['firstname'],
+                'middlename' => $request['middlename'],
+                'lastname' => $request['lastname'],
+                'suffixname' => $request['suffixname'],
+                'email' => $request['email'],
+                'photo' => $filename,
+                'username' => $request['username'],
+                'password' => Hash::make($request['password']),
+                'email_verified_at' => date('Y-m-d H:i:s'),
+            ]);
         }
 
         return view('users.create');
@@ -203,11 +224,11 @@ class UsersController extends Controller
     
     /**
      * for restoring soft deleted of user
-     * @param Request $request
+     * @param UserRequest $request
      *
      * @return redirect
      */
-    public function restore(Request $request) {
+    public function restore(UserRequest $request) {
         $user = $this->getSingleUser($request);
         $userId = $user->id;
 
@@ -232,5 +253,13 @@ class UsersController extends Controller
             ->forceDelete();
 
         return redirect('/users/index');
+    }
+
+    public function store(UserRequest $userRequest) {
+
+    }
+
+    public function update(UserRequest $userRequest, int $id) {
+
     }
 }
